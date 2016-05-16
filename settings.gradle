@@ -1,0 +1,4 @@
+include 'kafkaviewer-app'
+include 'kafkaviewer-wlpcfg'
+
+rootProject.name='kafkaviewer'
