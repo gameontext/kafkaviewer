@@ -13,8 +13,6 @@ RUN wget https://github.com/coreos/etcd/releases/download/v2.2.2/etcd-v2.2.2-lin
     rm etcd-v2.2.2-linux-amd64.tar.gz ; \
     mv etcdctl /usr/local/bin/etcdctl
 
-COPY ./forwarder.conf /opt/forwarder.conf     
-
 COPY ./startup.sh /opt/startup.sh
 
 CMD ["/opt/startup.sh"]
