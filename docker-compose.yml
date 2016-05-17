@@ -1,0 +1,5 @@
+kafkaviewer:
+ build: kafkaviewer-wlpcfg 
+ environment:
+  KAFKA_URL: 127.0.0.1:9092
+ net: "container:kafka"

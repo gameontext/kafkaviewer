@@ -14,7 +14,8 @@ dependencies {
     providedCompile 'javax.enterprise.concurrent:javax.enterprise.concurrent-api:1.0'
 
     // kafka client =)
-    compile 'org.apache.kafka:kafka-clients:0.9.0.0'
+    compile 'org.apache.kafka:kafka-clients:0.9.0.1'
+    runtime 'org.slf4j:slf4j-jdk14:1.7.13'
 }
 
 
