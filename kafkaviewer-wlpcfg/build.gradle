@@ -55,12 +55,12 @@ import com.bmuschko.gradle.docker.tasks.image.*
 
 docker {
       url = dockerHost
-    certPath = new File(dockerCertPath)
+      certPath = new File(dockerCertPath)
 }
 
-task buildDockerImage(type: DockerBuildImage, dependsOn: ['copyWAR','copyLibs']) {
+task buildDockerImage(type: DockerBuildImage, dependsOn: ['copyWAR']) {
     inputDir = file('.')
-    tag = 'gameon-player'
+    tag = 'gameon-kafkaviewer'
     quiet = false
 }
 

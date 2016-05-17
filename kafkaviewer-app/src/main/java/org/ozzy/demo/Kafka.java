@@ -7,8 +7,13 @@ import java.util.Properties;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.PreDestroy;
+import javax.annotation.Resource;
 import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.Initialized;
+import javax.enterprise.context.Destroyed;
+import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.CDI;
 import javax.naming.InitialContext;
@@ -21,10 +26,6 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 
 @ApplicationScoped
 public class Kafka {
-
-	private static String localKafka = "127.0.0.1:9092";
-	// private static String remoteKafka =
-	// "kafka01-prod01.messagehub.services.us-south.bluemix.net:9093,kafka02-prod01.messagehub.services.us-south.bluemix.net:9093,kafka03-prod01.messagehub.services.us-south.bluemix.net:9093,kafka04-prod01.messagehub.services.us-south.bluemix.net:9093,kafka05-prod01.messagehub.services.us-south.bluemix.net:9093";
 	private String kafkaUrl;
 
 	private KafkaConsumer<String, String> consumer = null;
@@ -33,7 +34,13 @@ public class Kafka {
 	private ScheduledFuture pollingThread;
 
 	public Kafka() {
-		System.out.println("Building kafka");
+		try{
+			kafkaUrl = (String) new InitialContext().lookup("kafkaUrl");
+		}catch(NamingException e){
+			throw new IllegalStateException(e);
+		}
+
+		System.out.println("Building kafka for url "+kafkaUrl);
 
 		if (System.getProperty("java.security.auth.login.config") == null) {
 			System.out.println("Fudging jaas property.");
@@ -41,15 +48,13 @@ public class Kafka {
 		}
 
 		System.out.println("Building consumer.. ");
-		kafkaUrl = localKafka;
-
 		Properties consumerProps = new Properties();
 		consumerProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaUrl);
-		consumerProps.put("acks", "-1");
+		consumerProps.put("request.required.acks", "-1");
 		consumerProps.put("group.id", "webmonitor");
-		consumerProps.put("enable.auto.commit", "true");
-		consumerProps.put("auto.commit.interval", "1000");
-		consumerProps.put("zookeeper.session.timeout.ms", 1000);
+		consumerProps.put("autocommit.enable", "true");
+		consumerProps.put("autocommit.interval.ms", "1000");
+		consumerProps.put("zk.sessiontimeout.ms", 1000);
 		consumerProps.put("session.timeout.ms", "30000");
 		consumerProps.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
 		consumerProps.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
@@ -61,10 +66,11 @@ public class Kafka {
 		// us a whole bunch..
 		boolean multipleHosts = kafkaUrl.indexOf(",") != -1;
 		if (multipleHosts) {
+			System.out.println("Initialising ssl consumer for kafka");
 			consumerProps.put("security.protocol", "SASL_SSL");
 			consumerProps.put("ssl.protocol", "TLSv1.2");
 			consumerProps.put("ssl.enabled.protocols", "TLSv1.2");
-			Path p = Paths.get(System.getProperty("java.home"), "security", "cacerts");
+			Path p = Paths.get(System.getProperty("java.home"), "lib", "security", "cacerts");
 			consumerProps.put("ssl.truststore.location", p.toString());
 			consumerProps.put("ssl.truststore.password", "changeit");
 			consumerProps.put("ssl.truststore.type", "JKS");
@@ -82,9 +88,9 @@ public class Kafka {
 					}
 				}
 				if (records != null && !records.isEmpty()) {
+					BeanManager bm = CDI.current().getBeanManager();
 					for (ConsumerRecord<String, String> record : records) {
 						System.out.println("Firing event.. ");
-						BeanManager bm = CDI.current().getBeanManager();
 						bm.fireEvent(new GameOnEvent(record.offset(), record.topic(), record.key(), record.value()));
 						System.out.println("event fired");
 					}
@@ -95,17 +101,28 @@ public class Kafka {
 
 		ManagedScheduledExecutorService executor;
 		try {
-			executor = (ManagedScheduledExecutorService) new InitialContext().lookup("concurrent/execSvc");
+			executor = (ManagedScheduledExecutorService) new InitialContext().lookup("java:comp/DefaultManagedScheduledExecutorService");
 		} catch (NamingException e) {
 			throw new IllegalStateException("Missing scheduler service!", e);
 		}
 
 		System.out.println("Registering polling thread");
-		pollingThread = executor.scheduleAtFixedRate(r, 100, 100, TimeUnit.MILLISECONDS);
+		pollingThread = executor.scheduleWithFixedDelay(r, 100, 100, TimeUnit.MILLISECONDS);
 
 		System.out.println("Subscribing to topics");
 		consumer.subscribe(Arrays.asList(new String[] { "gameon" }));
 
+	}
+
+	public void init(@Observes @Initialized(ApplicationScoped.class) Object init) {
+		//no op.. just creating this bean did all the work.
+	}
+
+  public void destroy(@Observes @Destroyed(ApplicationScoped.class) Object init) {
+		System.out.println("Shutting down kafka polling thread");
+		pollingThread.cancel(true);
+		System.out.println("Closing kafka consumer.");
+		consumer.close();
 	}
 
 }

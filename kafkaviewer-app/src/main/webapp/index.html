@@ -3,7 +3,9 @@
   <title>WebSocket Test</title>
   <script language="javascript" type="text/javascript">
 
-  var wsUri = "ws://"+window.location.host+"/MessageHubView/kafka";
+  console.log("Window.location.host is ");
+  console.log(window.location.host);
+  var wsUri = "ws://"+window.location.host+"/KafkaViewer/kafka";
   var output;
 
   function init()

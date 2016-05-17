@@ -15,16 +15,10 @@ import javax.websocket.server.ServerEndpoint;
 
 @ServerEndpoint(value = "/kafka")
 public class KafkaSocket {
-	
-	//we don't actually use the kafka bean directly
-	//but by having it injected, we know it's been created once
-	//that means we've subscribed to the topics etc.
-	@Inject
-	Kafka kafka;
 
 	@Inject
 	SessionManager sessions;
-	
+
 	public void processRecord(@Observes GameOnEvent event) {
 		System.out.println("Processing record.. ");
 		JsonObjectBuilder message = Json.createObjectBuilder();
@@ -46,7 +40,7 @@ public class KafkaSocket {
 	}
 
 	@OnOpen
-	public void onOpen(Session session, EndpointConfig ec) {	
+	public void onOpen(Session session, EndpointConfig ec) {
 		System.out.println("Session opened... ");
 		sessions.addSession(session);
 	}
