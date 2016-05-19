@@ -13,8 +13,12 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
-@ServerEndpoint(value = "/kafka")
-public class KafkaSocket {
+/**
+	Endpoint that listens directly to the cdi events
+	and relays them as json to all connected websocket clients.
+*/
+@ServerEndpoint(value = "/kafkacdi")
+public class KafkaCDISocket {
 
 	@Inject
 	SessionManager sessions;
@@ -35,8 +39,8 @@ public class KafkaSocket {
 		System.out.println(("Sent."));
 	}
 
-	public KafkaSocket() {
-		System.out.println("Created kafkasocket "+this.hashCode());
+	public KafkaCDISocket() {
+		System.out.println("Created kafkacdisocket "+this.hashCode());
 	}
 
 	@OnOpen

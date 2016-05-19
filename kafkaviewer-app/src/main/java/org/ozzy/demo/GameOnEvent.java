@@ -5,13 +5,11 @@ public class GameOnEvent {
 	private String topic;
 	private String key;
 	private String value;
-	
+
 	public GameOnEvent(){
-		
 	}
-	
+
 	public GameOnEvent(long offset, String topic, String key, String value){
-		System.out.println("Building game on event");
 		this.offset = offset;
 		this.topic = topic;
 		this.key=key;
@@ -28,5 +26,9 @@ public class GameOnEvent {
 	}
 	public String getValue(){
 		return value;
+	}
+
+	public String toString(){
+		return "GameOnEvent["+this.hashCode()+"] offset:"+offset+" topic:"+topic+" key:"+key+" value:"+value;
 	}
 }
