@@ -2,22 +2,10 @@ package org.ozzy.demo;
 
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.event.Observes;
-import javax.enterprise.context.ApplicationScoped;
-
-import javax.json.Json;
-import javax.json.JsonObjectBuilder;
-
-import rx.Observable;
-import rx.Observer;
-import rx.Observable.OnSubscribe;
-import rx.observables.AsyncOnSubscribe;
-import rx.Subscriber;
-import rx.functions.Action2;
-
 import java.util.concurrent.LinkedBlockingQueue;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
 
 @ApplicationScoped
 public class KafkaRxCDIBridge {

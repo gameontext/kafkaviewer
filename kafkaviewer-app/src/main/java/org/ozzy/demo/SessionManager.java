@@ -3,9 +3,9 @@ package org.ozzy.demo;
 import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-import javax.websocket.Session;
 
 import javax.enterprise.inject.Vetoed;
+import javax.websocket.Session;
 
 /**
  A simple bean that tracks websocket sessions,

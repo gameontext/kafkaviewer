@@ -1,6 +1,7 @@
 package org.ozzy.demo;
 
-import javax.enterprise.event.Observes;
+import java.io.IOException;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.json.Json;
@@ -15,7 +16,6 @@ import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
 import rx.Subscription;
-import java.io.IOException;
 
 
 @ServerEndpoint(value = "/kafkarxjava")
@@ -58,7 +58,7 @@ public class KafkaRxJavaSocket {
 	public void init(){
 		System.out.println("Rx Endpoint ["+this.hashCode()+"] Initializing rxjava based websocket.");
 		subscription = kafka.consume()
-			.filter(gameOnEvent -> gameOnEvent.getKey().equals("coffee"))
+			//.filter(gameOnEvent -> gameOnEvent.getKey().equals("coffee")) //test filter.. =)
 			.map(gameOnEvent -> toJson(gameOnEvent))
 			.subscribe(jsonMessage -> sendToSession(jsonMessage));
 		System.out.println("Rx Endpoint ["+this.hashCode()+"] RxJava observable init complete.");

@@ -2,15 +2,14 @@ package org.ozzy.demo;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import javax.annotation.Resource;
-import javax.annotation.PostConstruct;
-import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.Bean;
 import java.util.Properties;
 
-import org.apache.kafka.clients.consumer.KafkaConsumer;
+import javax.annotation.Resource;
+import javax.enterprise.inject.Produces;
+import javax.enterprise.inject.spi.InjectionPoint;
+
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
 
 /**
   Builds a kafkaconsumer with no subscriptions..
@@ -32,14 +31,11 @@ public class KafkaConsumerInjector {
   		System.out.println("Building consumer.. ");
   		Properties consumerProps = new Properties();
   		consumerProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaUrl);
-  		consumerProps.put("request.required.acks", "-1");
-  		consumerProps.put("group.id", "webmonitor");//."+injection.getBean().getBeanClass().getName());
-  		//consumerProps.put("autocommit.enable", "true");
-  		//consumerProps.put("autocommit.interval.ms", "1000");
-  		//consumerProps.put("zk.sessiontimeout.ms", 1000);
-  		consumerProps.put("session.timeout.ms", "30000");
-  		consumerProps.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-  		consumerProps.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+  		consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, "kafka."+injection.getBean().getBeanClass().getName());
+  		consumerProps.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "1000");
+  		consumerProps.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "30000");
+  		consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
+  		consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
 
   		// this is a cheat, we need to enable ssl when talking to message
   		// hub, and not to kafka locally. The easiest way to know which we are

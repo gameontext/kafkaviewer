@@ -37,4 +37,6 @@
     <keyStore id="defaultKeyStore" password="wibble"/>
 
     <webApplication id="KafkaViewer" location="kafkaviewer-app.war" name="KafkaViewer"/>
+    
+      <logging consoleLogLevel="INFO" traceSpecification="*=info:org.ozzy.demo.*=all"/>
 </server>

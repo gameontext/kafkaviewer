@@ -1,23 +1,18 @@
 package org.ozzy.demo;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.Properties;
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.Initialized;
 import javax.enterprise.context.Destroyed;
+import javax.enterprise.context.Initialized;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.CDI;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.inject.Inject;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -39,9 +34,9 @@ public class KafkaCDIBridge {
 	private KafkaConsumer<String, String> consumer;
 
 	@Resource( lookup = "java:comp/DefaultManagedScheduledExecutorService" )
-  ManagedScheduledExecutorService executor;
+    ManagedScheduledExecutorService executor;
 
-	@SuppressWarnings({ "unused", "rawtypes" })
+	@SuppressWarnings({ "rawtypes" })
 	private ScheduledFuture pollingThread;
 
 	public void init(@Observes @Initialized(ApplicationScoped.class) Object init) {
@@ -67,8 +62,9 @@ public class KafkaCDIBridge {
 		System.out.println("CDI Registering polling thread");
 		pollingThread = executor.scheduleWithFixedDelay(r, 100, 100, TimeUnit.MILLISECONDS);
 
-		System.out.println("CDI Subscribing to topics");
-		consumer.subscribe(Arrays.asList(new String[] { "gameon" }));
+		List<String> topics = Arrays.asList(new String[] { "gameon", "playerEvents", "siteEvents" });
+		System.out.println("CDI Subscribing to topics, "+topics);
+		consumer.subscribe(topics);
 	}
 
   public void destroy(@Observes @Destroyed(ApplicationScoped.class) Object init) {

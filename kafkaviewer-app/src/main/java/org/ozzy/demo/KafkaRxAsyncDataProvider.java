@@ -1,26 +1,17 @@
 package org.ozzy.demo;
 
-import java.util.List;
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.inject.Inject;
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import javax.enterprise.event.Observes;
-
-import javax.json.Json;
-import javax.json.JsonObjectBuilder;
+import javax.inject.Inject;
 
 import rx.Observable;
 import rx.Observer;
-import rx.Observable.OnSubscribe;
-import rx.observables.AsyncOnSubscribe;
-import rx.Subscriber;
 import rx.functions.Action2;
-
-import java.util.concurrent.LinkedBlockingQueue;
 
 public class KafkaRxAsyncDataProvider {
 

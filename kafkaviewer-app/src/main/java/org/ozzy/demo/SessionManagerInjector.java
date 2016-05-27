@@ -1,10 +1,8 @@
 package org.ozzy.demo;
 
 import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.Annotated;
-import java.lang.annotation.Annotation;
+import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
 import javax.websocket.server.ServerEndpoint;
 
@@ -20,7 +18,7 @@ public class SessionManagerInjector {
   */
   @Produces
   public SessionManager inject(InjectionPoint injection){
-    Bean bean = injection.getBean();
+    Bean<?> bean = injection.getBean();
     Class<?> beanClass = bean.getBeanClass();
     ServerEndpoint se = beanClass.getAnnotation(ServerEndpoint.class);
     if(se!=null){
